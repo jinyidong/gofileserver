@@ -1,0 +1,7 @@
+# gofileserver.toml
+
+location       = "/files/"
+dir            = "/"
+port           = 8181
+deviceName     = "eth0"
+filterRule     = "/applesign/"

@@ -9,17 +9,24 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gofileserver/pkg"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"runtime"
 )
 
 type fileServerConfig struct {
-	Location string
-	Dir      string
-	Port     uint16
+	Location   string
+	Dir        string
+	Port       uint16
+	DeviceName string //网卡
+	FilterRule string
 }
 
 var (
@@ -31,9 +38,9 @@ var (
 func init() {
 	var tomlPath string
 	if runtime.GOOS == `windows` {
-		tomlPath = "e:/xinxinserver/config/fileServer.toml"
+		tomlPath = "./gofileserver.toml"
 	} else {
-		tomlPath = "/config/fileServer.toml"
+		tomlPath = "/config/gofileserver.toml"
 	}
 	flag.StringVar(&confPath, "conf", tomlPath, "config path")
 
@@ -46,10 +53,73 @@ func init() {
 		panic(err)
 	}
 }
+
+type response struct {
+	Code    int         `json:"Code"`
+	Data    interface{} `json:"Data"`
+	Message string      `json:"Message"`
+}
+
 func main() {
+	go func() {
+		pkg.WireShark(fileServerCfg.Port, fileServerCfg.DeviceName, fileServerCfg.FilterRule)
+	}()
+
 	http.HandleFunc(fileServerCfg.Location, func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, r.URL.Path[1:])
 	})
 
+	http.HandleFunc("/bindUdidAndFile", func(w http.ResponseWriter, r *http.Request) {
+		body, _ := ioutil.ReadAll(r.Body)
+		defer r.Body.Close()
+
+		req := struct {
+			UdId     string `json:"udid"`
+			FileName string `json:"fileName"`
+		}{}
+
+		if err := json.Unmarshal(body, &req); err == nil {
+			log.Info(req)
+		} else {
+			fmt.Fprint(w, makeResponse(-1, nil, err.Error()))
+			return
+		}
+
+		if req.UdId == "" || req.FileName == "" {
+			fmt.Fprint(w, makeResponse(-1, nil, "udid或fileName不能为空！"))
+			return
+		}
+
+		pkg.BindUdIdAndFile(req.UdId, req.FileName)
+
+		fmt.Fprint(w, makeResponse(0, nil, "success"))
+	})
+
+	http.HandleFunc("/getDownloading", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			fmt.Fprint(w, makeResponse(-1, nil, "接口请求方式错误"))
+			return
+		}
+		u, _ := url.Parse(r.URL.String())
+		paras, _ := url.ParseQuery(u.RawQuery)
+		if paras["udid"][0] == "" {
+			fmt.Fprint(w, makeResponse(-1, nil, "参数udid不为空"))
+			return
+		}
+		downloading := pkg.GetDownloading(paras["udid"][0])
+
+		fmt.Fprint(w, makeResponse(0, downloading, "success"))
+	})
+
 	http.ListenAndServe(fmt.Sprintf(":%d", fileServerCfg.Port), nil)
+}
+
+func makeResponse(code int, data interface{}, msg string) string {
+	var resp response
+	resp.Code = code
+	resp.Message = msg
+	resp.Data = data
+	ret, _ := json.Marshal(&resp)
+	fmt.Println(string(ret))
+	return string(ret)
 }
