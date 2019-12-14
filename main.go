@@ -65,8 +65,8 @@ func main() {
 	}()
 
 	http.HandleFunc(fileServerCfg.FilterRule, func(w http.ResponseWriter, r *http.Request) {
-		log.Infof("Download Url:%v", r.URL.Path[1:])
-		http.ServeFile(w, r, r.URL.Path[1:])
+		log.Infof("Download Url:%v", fileServerCfg.Dir+r.URL.Path[1:])
+		http.ServeFile(w, r, fileServerCfg.Dir+r.URL.Path[1:])
 	})
 
 	http.HandleFunc("/bindUdidAndFile", func(w http.ResponseWriter, r *http.Request) {
