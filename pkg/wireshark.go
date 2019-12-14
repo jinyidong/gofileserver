@@ -114,6 +114,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 
 	for packet := range packetSource.Packets() {
 		if packet.NetworkLayer() == nil || packet.TransportLayer() == nil || packet.TransportLayer().LayerType() != layers.LayerTypeTCP {
+			log.Info("unexpected packet")
 			continue
 		}
 		var srcIP, srcPort, dstIP, dstPort string
