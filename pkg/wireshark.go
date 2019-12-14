@@ -16,6 +16,16 @@ import (
 	"sync"
 )
 
+var (
+	snapshotLen      = int32(65536)
+	promiscuous      = true
+	timeout          = pcap.BlockForever
+	udIdAndFileMap   sync.Map
+	fileAndIPPortMap sync.Map
+	ipPortTrafficMap sync.Map
+	fileSizeMap      sync.Map
+)
+
 func BindUdIdAndFile(udId, file string) {
 	udIdAndFileMap.Store(udId, file)
 }
@@ -84,16 +94,6 @@ func GetDownloading(udId string) int {
 	}
 	return int(math.Min(float64(downloadSize)/float64(fileSize)*100, 100))
 }
-
-var (
-	snapshotLen      = int32(65536)
-	promiscuous      = true
-	timeout          = pcap.BlockForever
-	udIdAndFileMap   sync.Map
-	fileAndIPPortMap sync.Map
-	ipPortTrafficMap sync.Map
-	fileSizeMap      sync.Map
-)
 
 //TODO:网络流量抓包监控
 func WireShark(watchPort uint16, deviceName string, filterRule string) {
