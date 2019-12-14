@@ -16,12 +16,8 @@ import (
 	"sync"
 )
 
-var (
-	udIdFileMap sync.Map
-)
-
 func BindUdIdAndFile(udId, file string) {
-	udIdFileMap.Store(udId, file)
+	udIdAndFileMap.Store(udId, file)
 }
 
 func GetDownloading(udId string) int {
