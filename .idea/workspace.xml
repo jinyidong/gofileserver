@@ -27,8 +27,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="92" column="22" lean-forward="true" selection-start-line="92" selection-start-column="22" selection-end-line="92" selection-end-column="22" />
+            <state relative-caret-position="135">
+              <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
               <folding>
                 <element signature="e#133#271#0" expanded="true" />
               </folding>
@@ -96,8 +96,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="572">
-              <caret line="28" selection-start-line="28" selection-end-line="28" />
+            <state relative-caret-position="195">
+              <caret line="184" column="19" selection-start-line="184" selection-start-column="19" selection-end-line="184" selection-end-column="19" />
               <folding>
                 <element signature="e#13#238#0" expanded="true" />
               </folding>
@@ -236,7 +236,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32991204" />
+      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.32991204" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32991204" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4633431" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -337,8 +337,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="92" column="22" lean-forward="true" selection-start-line="92" selection-start-column="22" selection-end-line="92" selection-end-column="22" />
+        <state relative-caret-position="135">
+          <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
           <folding>
             <element signature="e#133#271#0" expanded="true" />
           </folding>
@@ -347,8 +347,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="572">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
+        <state relative-caret-position="195">
+          <caret line="184" column="19" selection-start-line="184" selection-start-column="19" selection-end-line="184" selection-end-column="19" />
           <folding>
             <element signature="e#13#238#0" expanded="true" />
           </folding>

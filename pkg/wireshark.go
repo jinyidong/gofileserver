@@ -182,6 +182,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 //TODO:定义过滤器
 func getFilter(port uint16) string {
 	filter := fmt.Sprintf("tcp and ((src port %v) or (dst port %v))", port, port)
+	log.Info(filter)
 	return filter
 }
 
