@@ -22,7 +22,6 @@ import (
 )
 
 type fileServerConfig struct {
-	Location   string
 	Dir        string
 	Port       uint16
 	DeviceName string //网卡
@@ -65,7 +64,8 @@ func main() {
 		pkg.WireShark(fileServerCfg.Port, fileServerCfg.DeviceName, fileServerCfg.FilterRule)
 	}()
 
-	http.HandleFunc(fileServerCfg.Location, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(fileServerCfg.FilterRule, func(w http.ResponseWriter, r *http.Request) {
+		log.Infof("Download Url:%v", r.URL.Path[1:])
 		http.ServeFile(w, r, r.URL.Path[1:])
 	})
 
