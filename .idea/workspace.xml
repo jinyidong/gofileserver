@@ -78,8 +78,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="197" column="160" selection-start-line="197" selection-start-column="160" selection-end-line="197" selection-end-column="160" />
+            <state relative-caret-position="776">
+              <caret line="276" selection-start-line="276" selection-end-line="276" />
               <folding>
                 <element signature="e#13#248#0" expanded="true" />
               </folding>
@@ -258,7 +258,7 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.66926503" />
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.28285077" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="bottom" id="LuaCheck" order="12" />
@@ -270,6 +270,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -380,8 +390,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="197" column="160" selection-start-line="197" selection-start-column="160" selection-end-line="197" selection-end-column="160" />
+        <state relative-caret-position="776">
+          <caret line="276" selection-start-line="276" selection-end-line="276" />
           <folding>
             <element signature="e#13#248#0" expanded="true" />
           </folding>
