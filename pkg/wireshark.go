@@ -93,7 +93,7 @@ func GetDownloading(udId string) int {
 		return 0
 	}
 
-	return int(math.Min(float64(downloadSize)/float64(2*fileSize)*100, 100))
+	return int(math.Min(float64(downloadSize)/float64(fileSize)*100, 100))
 }
 
 //TODO:网络流量抓包监控
