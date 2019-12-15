@@ -110,6 +110,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	packetSource.NoCopy = true
 
+	log.Infof("wireSharking(port:%v,deviceName:%v", watchPort, deviceName)
 	for packet := range packetSource.Packets() {
 		if packet.NetworkLayer() == nil || packet.TransportLayer() == nil || packet.TransportLayer().LayerType() != layers.LayerTypeTCP {
 			log.Info("unexpected packet")
@@ -179,7 +180,6 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 //TODO:定义过滤器
 func getFilter(port uint16) string {
 	filter := fmt.Sprintf("tcp and ((src port %v) or (dst port %v))", port, port)
-	log.Info(filter)
 	return filter
 }
 
