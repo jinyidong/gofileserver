@@ -23,6 +23,7 @@ var (
 	fileAndIPPortMap sync.Map
 	ipPortTrafficMap sync.Map
 	fileSizeMap      sync.Map
+	ipPortAckMap     sync.Map
 )
 
 func BindUdIdAndFile(udId, file string) {
@@ -132,10 +133,12 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		tcpLayer := packet.Layer(layers.LayerTypeTCP)
+		var ack uint32
 		if tcpLayer != nil {
 			tcp, _ := tcpLayer.(*layers.TCP)
 			srcPort = tcp.SrcPort.String()
 			dstPort = tcp.DstPort.String()
+			ack = tcp.Ack
 		}
 
 		applicationLayer := packet.ApplicationLayer()
@@ -173,6 +176,12 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			continue
 		}
 		key := dstIP + "_" + dstPort
+		if _, ok := ipPortAckMap.Load(key + "_" + strconv.Itoa(int(ack))); ok {
+			continue
+		} else {
+			ipPortAckMap.Store(key+"_"+strconv.Itoa(int(ack)), 1)
+		}
+
 		if v, ok := ipPortTrafficMap.Load(key); ok {
 			if vv, ok := v.(int64); ok {
 				ipPortTrafficMap.Store(key, vv+int64(len(applicationLayer.Payload())))
