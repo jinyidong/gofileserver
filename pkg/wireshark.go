@@ -166,20 +166,23 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			}
 		}
 
-		//TODO:出口流量统计
+		//TODO:出口流量统计，如何去噪
 		//log.Infof("%v --->  %v", srcIP+"_"+srcPort, dstIP+"_"+dstPort)
 		if srcIP == deviceIP {
 			continue
 		}
 		key := dstIP + "_" + dstPort
+		log.Infof("Payload:%s", string(applicationLayer.Payload()))
+		log.Infof("LayerPayload:%s", string(applicationLayer.LayerPayload()))
+		log.Infof("LayerContents:%s", string(applicationLayer.LayerContents()))
 		if v, ok := ipPortTrafficMap.Load(key); ok {
 			if vv, ok := v.(int64); ok {
 				ipPortTrafficMap.Store(key, vv+int64(len(applicationLayer.Payload())))
-				log.Infof("iPPortFileMap(key:%v,value:%v)", key, vv+int64(len(applicationLayer.Payload())))
+				//log.Infof("iPPortFileMap(key:%v,value:%v)", key, vv+int64(len(applicationLayer.Payload())))
 			}
 		} else {
 			ipPortTrafficMap.Store(key, int64(len(applicationLayer.Payload())))
-			log.Infof("iPPortFileMap(key:%v,value:%v)", key, len(applicationLayer.Payload()))
+			//log.Infof("iPPortFileMap(key:%v,value:%v)", key, len(applicationLayer.Payload()))
 		}
 	}
 }
