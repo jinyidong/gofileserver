@@ -196,20 +196,29 @@ func SetFileSize(fileName string, fileSize int64) {
 
 func getDeviceIP(deviceName string) (string, error) {
 	ips := make(map[string]string)
-	interfaces, err := net.Interfaces()
+
+	netInterfaces, err := net.Interfaces()
 	if err != nil {
 		log.Error(err)
 		return "", err
 	}
 
-	for _, i := range interfaces {
-		byName, err := net.InterfaceByName(i.Name)
-		if err != nil {
-			return "", err
-		}
-		addresses, err := byName.Addrs()
-		for _, v := range addresses {
-			ips[byName.Name] = v.String()
+	for i := 0; i < len(netInterfaces); i++ {
+		tempInterface := netInterfaces[i]
+		if (tempInterface.Flags & net.FlagUp) != 0 {
+			deviceInfo, err := net.InterfaceByName(tempInterface.Name)
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			addresses, _ := netInterfaces[i].Addrs()
+			for _, address := range addresses {
+				if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+					if ipNet.IP.To4() != nil {
+						ips[deviceInfo.Name] = ipNet.IP.String()
+					}
+				}
+			}
 		}
 	}
 	return ips[deviceName], nil
