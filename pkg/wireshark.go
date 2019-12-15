@@ -133,7 +133,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		tcpLayer := packet.Layer(layers.LayerTypeTCP)
-		var seq, ack uint32
+		var seq, ack uint32 //fin
 		if tcpLayer != nil {
 			tcp, _ := tcpLayer.(*layers.TCP)
 			srcPort = tcp.SrcPort.String()
@@ -148,6 +148,8 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 		//TODO:入口请求过滤
 		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) && dstIP != deviceIP {
+			//tcp ack
+			log.Infof("in--->seq:%v,ack:%v", seq, ack)
 			inputPayloadStr := string(applicationLayer.Payload())
 			log.Infof("request:%s", inputPayloadStr)
 			if match, _ := regexp.MatchString(filterRule, inputPayloadStr); match {
@@ -176,9 +178,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		if srcIP == deviceIP {
 			continue
 		}
-
-		log.Infof("ack:%v,seq:%v", ack, seq)
-
+		log.Infof("out--->seq:%v,ack:%v", seq, ack)
 		key := dstIP + "_" + dstPort
 		if _, ok := ipPortSeqMap.Load(key + "_" + strconv.Itoa(int(seq))); ok {
 			continue
