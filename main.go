@@ -9,24 +9,23 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gofileserver/pkg"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"runtime"
 )
 
 type fileServerConfig struct {
-	Dir        string
-	Port       uint16
-	DeviceName string //网卡
-	FilterRule string
+	Dir            string
+	FileServerPort uint16
+	DeviceName     string //网卡
+	FilterRule     string
+	HttpServerPort uint16
 }
 
 var (
@@ -54,14 +53,89 @@ func init() {
 	}
 }
 
-type response struct {
-	Code    int         `json:"Code"`
-	Data    interface{} `json:"Data"`
-	Message string      `json:"Message"`
-}
-
 func main() {
-	go pkg.WireShark(fileServerCfg.Port, fileServerCfg.DeviceName, fileServerCfg.FilterRule)
+	go pkg.WireShark(fileServerCfg.FileServerPort, fileServerCfg.DeviceName, fileServerCfg.FilterRule)
+
+	go func() {
+		router := gin.Default()
+
+		router.POST("/bindUdidAndFile", func(c *gin.Context) {
+			req := struct {
+				UdId     string `json:"udid"`
+				FileName string `json:"fileName"`
+			}{}
+			err := c.BindJSON(&req)
+			if nil != err {
+				c.JSON(200, gin.H{
+					"Code":    -1,
+					"Message": err.Error(),
+				})
+				return
+			}
+			if req.UdId == "" || req.FileName == "" {
+				c.JSON(200, gin.H{
+					"Code":    -1,
+					"Message": "udid或fileName不能为空！",
+				})
+				return
+			}
+			log.Infof("bindUdidAndFile,udid:%s,fileName:%s", req.UdId, req.FileName)
+			pkg.BindUdIdAndFile(req.UdId, req.FileName)
+			c.JSON(200, gin.H{
+				"Code":    0,
+				"Message": "success",
+			})
+		})
+
+		router.POST("/removeDownloading", func(c *gin.Context) {
+			req := struct {
+				UdId string `json:"udid"`
+			}{}
+			err := c.BindJSON(&req)
+			if nil != err {
+				c.JSON(200, gin.H{
+					"Code":    -1,
+					"Message": err.Error(),
+				})
+				return
+			}
+			if req.UdId == "" {
+				c.JSON(200, gin.H{
+					"Code":    -1,
+					"Message": "udid不能为空！",
+				})
+				return
+			}
+			log.Infof("removeDownloading,udId:%s", req.UdId)
+			pkg.RemoveDownloading(req.UdId)
+			c.JSON(200, gin.H{
+				"Code":    0,
+				"Message": "success",
+			})
+		})
+
+		//TODO:获取下载进度
+		router.GET("/getDownloading", func(c *gin.Context) {
+			udId := c.Query("udid")
+			if udId == "" {
+				c.JSON(200, gin.H{
+					"code":    -1,
+					"message": "udid不为空！",
+					"data":    nil,
+				})
+				return
+			}
+			log.Infof("remoteRemoteAddr:%v", c.Request.RemoteAddr)
+			downloading := pkg.GetDownloading(udId)
+			c.JSON(200, gin.H{
+				"code":    0,
+				"message": "success",
+				"data":    downloading,
+			})
+		})
+
+		router.Run(fmt.Sprintf(":%d", fileServerCfg.HttpServerPort))
+	}()
 
 	http.HandleFunc(fileServerCfg.FilterRule, func(w http.ResponseWriter, r *http.Request) {
 		filePath := fileServerCfg.Dir + r.URL.Path[1:]
@@ -80,57 +154,5 @@ func main() {
 		http.ServeFile(w, r, filePath)
 	})
 
-	http.HandleFunc("/bindUdidAndFile", func(w http.ResponseWriter, r *http.Request) {
-		body, _ := ioutil.ReadAll(r.Body)
-		defer r.Body.Close()
-
-		req := struct {
-			UdId     string `json:"udid"`
-			FileName string `json:"fileName"`
-		}{}
-
-		if err := json.Unmarshal(body, &req); err == nil {
-			log.Info(req)
-		} else {
-			fmt.Fprint(w, makeResponse(-1, nil, err.Error()))
-			return
-		}
-
-		if req.UdId == "" || req.FileName == "" {
-			fmt.Fprint(w, makeResponse(-1, nil, "udid或fileName不能为空！"))
-			return
-		}
-
-		pkg.BindUdIdAndFile(req.UdId, req.FileName)
-
-		fmt.Fprint(w, makeResponse(0, nil, "success"))
-	})
-
-	http.HandleFunc("/getDownloading", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			fmt.Fprint(w, makeResponse(-1, nil, "接口请求方式错误"))
-			return
-		}
-		u, _ := url.Parse(r.URL.String())
-		paras, _ := url.ParseQuery(u.RawQuery)
-		if paras["udid"][0] == "" {
-			fmt.Fprint(w, makeResponse(-1, nil, "参数udid不为空"))
-			return
-		}
-		downloading := pkg.GetDownloading(paras["udid"][0])
-
-		fmt.Fprint(w, makeResponse(0, downloading, "success"))
-	})
-
-	http.ListenAndServe(fmt.Sprintf(":%d", fileServerCfg.Port), nil)
-}
-
-func makeResponse(code int, data interface{}, msg string) string {
-	var resp response
-	resp.Code = code
-	resp.Message = msg
-	resp.Data = data
-	ret, _ := json.Marshal(&resp)
-	fmt.Println(string(ret))
-	return string(ret)
+	http.ListenAndServe(fmt.Sprintf(":%d", fileServerCfg.FileServerPort), nil)
 }

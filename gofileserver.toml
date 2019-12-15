@@ -1,7 +1,7 @@
 # gofileserver.toml
 
-location       = "/files/"
 dir            = "/"
-port           = 8181
+fileServerPort = 8282
 deviceName     = "eth0"
 filterRule     = "/applesign/"
+httpServerPort = 8282

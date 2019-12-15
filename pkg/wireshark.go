@@ -226,3 +226,39 @@ func getDeviceIP(deviceName string) (string, error) {
 	}
 	return ips[deviceName], nil
 }
+
+func RemoveDownloading(udid string) {
+	//step1:根据udid获取文件
+	iFileName, ok := udIdAndFileMap.Load(udid)
+	if !ok {
+		log.Warningf("RemoveDownloading:未获取到UdId(%s)对应的文件名称", udid)
+		return
+	}
+	fileName, ok := iFileName.(string)
+	if !ok {
+		log.Warningf("RemoveDownloading:UdId(%s)对应的文件(%v)类型断言失败", udid, iFileName)
+		return
+	}
+	if fileName == "" {
+		log.Warningf("RemoveDownloading:UdId(%s)对应的文件(%v)名为空", udid, iFileName)
+		return
+	}
+
+	//step2:根据文件名获取ip:port
+	iIPPort, ok := fileAndIPPortMap.Load(fileName)
+	if !ok {
+		log.Warningf("RemoveDownloading:未获取到Udid(%s)->文件(%s)的IP:Port", udid, fileName)
+		return
+	}
+	ipPort, ok := iIPPort.(string)
+	if !ok {
+		log.Warningf("RemoveDownloading:UdId(%s)->文件(%v)所对应的IPPort(%v)类型断言失败", udid, fileName, iIPPort)
+		return
+	}
+
+	udIdAndFileMap.Delete(udid)
+
+	fileAndIPPortMap.Delete(fileName)
+
+	ipPortTrafficMap.Delete(ipPort)
+}
