@@ -75,12 +75,12 @@ func GetDownloading(udId string) int {
 	//step3:根据ip:port获取流量
 	iTraffic, ok := ipPortTrafficMap.Load(ipPort)
 	if !ok {
-		log.Warningf("未获取到Udid(%s)->文件(%s)->IP:Port(%s)对应的下载流量", udId, fileName, ipPort)
+		log.Warningf("未获取到UdId(%s)->文件(%s)->IP:Port(%s)对应的下载流量", udId, fileName, ipPort)
 		return 0
 	}
 	traffic, ok := iTraffic.(int64)
 	if !ok {
-		log.Warningf("Udid(%s)->文件(%s)->IPPort(%s)类型所对应的流量(%v)类型断言失败", udId, fileName, ipPort, iTraffic)
+		log.Warningf("UdId(%s)->文件(%s)->IPPort(%s)类型所对应的流量(%v)类型断言失败", udId, fileName, ipPort, iTraffic)
 		return 0
 	}
 
@@ -133,10 +133,9 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 
 		applicationLayer := packet.ApplicationLayer()
 		if applicationLayer == nil {
+			log.Warning("applicationLayer is nil")
 			continue
 		}
-		log.Infof("%v --->  %v", srcIP+"_"+srcPort, dstIP+"_"+dstPort)
-
 		//TODO:入口请求过滤
 		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) {
 			inputPayloadStr := string(applicationLayer.Payload())
