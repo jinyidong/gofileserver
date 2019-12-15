@@ -133,14 +133,13 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		tcpLayer := packet.Layer(layers.LayerTypeTCP)
-		var seq uint32
+		var seq, ack uint32
 		if tcpLayer != nil {
 			tcp, _ := tcpLayer.(*layers.TCP)
 			srcPort = tcp.SrcPort.String()
 			dstPort = tcp.DstPort.String()
 			seq = tcp.Seq
-			//FIN, SYN, RST, PSH, ACK, URG, ECE, CWR, NS
-			log.Infof("ack:%v,seq:%v,syn:%v,fin:%v", tcp.Ack, tcp.Seq, tcp.SYN, tcp.FIN)
+			ack = tcp.Ack
 		}
 
 		applicationLayer := packet.ApplicationLayer()
@@ -177,6 +176,9 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		if srcIP == deviceIP {
 			continue
 		}
+
+		log.Infof("ack:%v,seq:%v", ack, seq)
+
 		key := dstIP + "_" + dstPort
 		if _, ok := ipPortSeqMap.Load(key + "_" + strconv.Itoa(int(seq))); ok {
 			continue
