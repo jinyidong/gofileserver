@@ -157,6 +157,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 						ipPortTrafficMap.Store(srcIP+"_"+srcPort, vv+int64(100*1024*1024))
 					}
 				}
+				log.Info(fmt.Sprintf("%s所对应的文件下载完成，客户端FIN！", srcIP+"_"+srcPort))
 			}
 
 			if applicationLayer == nil {
