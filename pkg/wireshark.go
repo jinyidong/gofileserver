@@ -145,6 +145,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		//TODO:入口流量监控，数据包确认
 		applicationLayer := packet.ApplicationLayer()
 		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) && dstIP != deviceIP {
+			fmt.Printf("in--->%s", fmt.Sprintf("%v_%v_%v_%v", srcIP, srcPort, ack, seq))
 			if iPacketTraffic, ok := ipPortAckSeqTrafficMap.Load(fmt.Sprintf("%v_%v_%v_%v", srcIP, srcPort, ack, seq)); ok {
 				var packetTraffic, totalTraffic int64
 				if packetTraffic, ok = iPacketTraffic.(int64); !ok {
@@ -193,6 +194,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		if srcIP == deviceIP {
 			continue
 		}
+		fmt.Printf("in--->%s", fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack))
 		if _, ok := ipPortAckSeqTrafficMap.Load(fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack)); ok {
 			continue
 		}
