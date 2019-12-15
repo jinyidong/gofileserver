@@ -177,9 +177,11 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 		key := dstIP + "_" + dstPort
 		if _, ok := ipPortAckMap.Load(key + "_" + strconv.Itoa(int(ack))); ok {
+			log.Infof("ipPortAck(ok):%s", key+"_"+strconv.Itoa(int(ack)))
 			continue
 		} else {
 			ipPortAckMap.Store(key+"_"+strconv.Itoa(int(ack)), 1)
+			log.Infof("ipPortAck:%s", key+"_"+strconv.Itoa(int(ack)))
 		}
 
 		if v, ok := ipPortTrafficMap.Load(key); ok {
