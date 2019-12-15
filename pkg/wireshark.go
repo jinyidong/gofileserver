@@ -186,6 +186,10 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		//TODO:出口流量统计，如何去噪
+		if applicationLayer == nil {
+			continue
+		}
+
 		if srcIP == deviceIP {
 			continue
 		}
