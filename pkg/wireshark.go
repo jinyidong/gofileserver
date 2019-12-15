@@ -146,8 +146,8 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 
 		//TODO:入口请求过滤
 		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) && dstIP != deviceIP {
-			if _, ok := ipPortSeqMap.Load(srcIP + "_" + srcPort + "_" + strconv.Itoa(int(seq))); !ok {
-				ipPortSeqMap.Store(srcIP+"_"+srcPort+"_"+strconv.Itoa(int(seq)), 0)
+			if _, ok := ipPortSeqMap.Load(srcIP + "_" + srcPort + "_" + strconv.Itoa(int(ack))); !ok {
+				ipPortSeqMap.Store(srcIP+"_"+srcPort+"_"+strconv.Itoa(int(ack)), 0)
 			}
 
 			if applicationLayer == nil {
