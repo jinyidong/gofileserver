@@ -8,8 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"math"
 	"net/url"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -184,22 +182,6 @@ func getFilter(port uint16) string {
 	filter := fmt.Sprintf("tcp and ((src port %v) or (dst port %v))", port, port)
 	log.Info(filter)
 	return filter
-}
-
-//TODO:获取文件大小
-func getFileSize(path string) int64 {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Errorf("getFileSize error:%v", err)
-		}
-	}()
-	var result int64
-	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		result = f.Size()
-		return nil
-	})
-	log.Infof("getFileSize--->%s ：%d", path, result)
-	return result
 }
 
 func SetFileSize(fileName string, fileSize int64) {

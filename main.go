@@ -61,9 +61,7 @@ type response struct {
 }
 
 func main() {
-	go func() {
-		pkg.WireShark(fileServerCfg.Port, fileServerCfg.DeviceName, fileServerCfg.FilterRule)
-	}()
+	go pkg.WireShark(fileServerCfg.Port, fileServerCfg.DeviceName, fileServerCfg.FilterRule)
 
 	http.HandleFunc(fileServerCfg.FilterRule, func(w http.ResponseWriter, r *http.Request) {
 		filePath := fileServerCfg.Dir + r.URL.Path[1:]
@@ -79,10 +77,6 @@ func main() {
 			return
 		}
 		pkg.SetFileSize(fileStat.Name(), fileStat.Size())
-		//data, err := ioutil.ReadFile(filePath)
-		//if nil != err {
-		//
-		//}
 		http.ServeFile(w, r, filePath)
 	})
 
