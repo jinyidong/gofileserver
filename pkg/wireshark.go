@@ -23,7 +23,6 @@ var (
 	fileAndIPPortMap       sync.Map
 	ipPortTotalTrafficMap  sync.Map
 	fileSizeMap            sync.Map
-	ipPortSeqMap           sync.Map
 	ipPortAckSeqTrafficMap sync.Map
 )
 
@@ -270,5 +269,5 @@ func RemoveDownloading(udid string) {
 
 	fileAndIPPortMap.Delete(fileName)
 
-	ipPortTrafficMap.Delete(ipPort)
+	ipPortTotalTrafficMap.Delete(ipPort)
 }
