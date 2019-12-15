@@ -15,9 +15,11 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gofileserver/pkg"
+	"io"
 	"net/http"
 	"os"
 	"runtime"
+	"time"
 )
 
 type fileServerConfig struct {
@@ -154,5 +156,11 @@ func main() {
 		http.ServeFile(w, r, filePath)
 	})
 
-	http.ListenAndServe(fmt.Sprintf(":%d", fileServerCfg.FileServerPort), nil)
+	s := &http.Server{
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		Addr:         fmt.Sprintf(":%d", fileServerCfg.FileServerPort),
+	}
+
+	s.ListenAndServe()
 }
