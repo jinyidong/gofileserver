@@ -156,8 +156,8 @@ func main() {
 	})
 
 	s := &http.Server{
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		ReadTimeout:  1 * time.Second,
+		WriteTimeout: 10 * time.Second,
 		Addr:         fmt.Sprintf(":%d", fileServerCfg.FileServerPort),
 	}
 
