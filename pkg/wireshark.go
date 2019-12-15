@@ -93,7 +93,7 @@ func GetDownloading(udId string) int {
 		return 0
 	}
 
-	return int(math.Min(float64(downloadSize)/float64(fileSize)*100, 100))
+	return int(math.Min(float64(downloadSize)*2/float64(fileSize)*100, 100))
 }
 
 //TODO:网络流量抓包监控
@@ -140,7 +140,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			dstPort = tcp.DstPort.String()
 			seq = tcp.Seq
 			//FIN, SYN, RST, PSH, ACK, URG, ECE, CWR, NS
-			log.Infof("ack:%v,seq:%v,syn:%v,fin:%v", tcp.Ack, tcp.Seq, tcp.SYN, tcp.FIN)
+			//log.Infof("ack:%v,seq:%v,syn:%v,fin:%v", tcp.Ack, tcp.Seq, tcp.SYN, tcp.FIN)
 		}
 
 		applicationLayer := packet.ApplicationLayer()
@@ -182,7 +182,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			continue
 		} else {
 			ipPortSeqMap.Store(key+"_"+strconv.Itoa(int(seq)), 1)
-			log.Infof("ipPortAck:%s", key+"_"+strconv.Itoa(int(seq)))
+			//log.Infof("ipPortAck:%s", key+"_"+strconv.Itoa(int(seq)))
 		}
 
 		if v, ok := ipPortTrafficMap.Load(key); ok {
