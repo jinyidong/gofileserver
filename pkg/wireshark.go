@@ -176,7 +176,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			}
 			continue
 		}
-		fmt.Printf("out--->ack:%v,seq:%v", ack, seq)
+
 		//TODO:出口流量统计，如何去噪
 		//log.Infof("%v --->  %v", srcIP+"_"+srcPort, dstIP+"_"+dstPort)
 		if srcIP == deviceIP || applicationLayer == nil {
