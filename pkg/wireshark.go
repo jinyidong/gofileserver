@@ -145,7 +145,6 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		//TODO:入口流量监控，数据包确认
 		applicationLayer := packet.ApplicationLayer()
 		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) && dstIP != deviceIP {
-			fmt.Printf("in--->%s\n", fmt.Sprintf("%v_%v_%v_%v", srcIP, srcPort, ack, seq))
 			if iPacketTraffic, ok := ipPortAckSeqTrafficMap.Load(fmt.Sprintf("%v_%v_%v_%v", srcIP, srcPort, ack, seq)); ok {
 				var packetTraffic, totalTraffic int64
 				if packetTraffic, ok = iPacketTraffic.(int64); !ok {
@@ -157,6 +156,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 					}
 				}
 				ipPortTotalTrafficMap.Store(srcIP+"_"+srcPort, totalTraffic+packetTraffic)
+				fmt.Printf("ipPortTotalTrafficMap--->key:%s,traffic:%v\n", fmt.Sprintf("%v_%v_%v_%v", srcIP, srcPort, ack, seq), totalTraffic+packetTraffic)
 			}
 
 			if applicationLayer == nil {
@@ -184,21 +184,18 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 				fileAndIPPortMap.Store(fileName, srcIP+"_"+srcPort)
 				ipPortTotalTrafficMap.Store(srcIP+"_"+srcPort, int64(0))
 			}
+			continue
 		}
 
 		//TODO:出口流量统计，如何去噪
-		if applicationLayer == nil {
+		if applicationLayer == nil || srcIP == deviceIP {
 			continue
 		}
-
-		if srcIP == deviceIP {
-			continue
-		}
-		fmt.Printf("out--->%s\n", fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack))
 		if _, ok := ipPortAckSeqTrafficMap.Load(fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack)); ok {
 			continue
 		}
 		ipPortAckSeqTrafficMap.Store(fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack), int64(len(applicationLayer.Payload())))
+		fmt.Printf("ipPortAckSeqTrafficMap--->key:%s,traffic:%v\n", fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack), int64(len(applicationLayer.Payload())))
 	}
 }
 
