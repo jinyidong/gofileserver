@@ -140,7 +140,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			dstPort = tcp.DstPort.String()
 			seq = tcp.Seq
 			//FIN, SYN, RST, PSH, ACK, URG, ECE, CWR, NS
-			//log.Infof("ack:%v,seq:%v,syn:%v,fin:%v", tcp.Ack, tcp.Seq, tcp.SYN, tcp.FIN)
+			log.Infof("ack:%v,seq:%v,syn:%v,fin:%v", tcp.Ack, tcp.Seq, tcp.SYN, tcp.FIN)
 		}
 
 		applicationLayer := packet.ApplicationLayer()
