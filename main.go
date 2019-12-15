@@ -15,7 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gofileserver/pkg"
-	"io"
 	"net/http"
 	"os"
 	"runtime"
