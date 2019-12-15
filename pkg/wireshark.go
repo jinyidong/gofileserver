@@ -7,6 +7,7 @@ import (
 	"github.com/google/gopacket/pcap"
 	log "github.com/sirupsen/logrus"
 	"math"
+	"net"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -95,6 +96,11 @@ func GetDownloading(udId string) int {
 
 //TODO:网络流量抓包监控
 func WireShark(watchPort uint16, deviceName string, filterRule string) {
+	deviceIP, err := getDeviceIP(deviceName)
+	if nil != err {
+		return
+	}
+	log.Infof("Device(%s)对应的IP为:%s", deviceName, deviceIP)
 	filter := getFilter(watchPort)
 	handle, err := pcap.OpenLive(deviceName, snapshotLen, promiscuous, timeout)
 	if err != nil {
@@ -110,7 +116,6 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	packetSource.NoCopy = true
 
-	log.Infof("wireSharking(port:%v,deviceName:%v", watchPort, deviceName)
 	for packet := range packetSource.Packets() {
 		if packet.NetworkLayer() == nil || packet.TransportLayer() == nil || packet.TransportLayer().LayerType() != layers.LayerTypeTCP {
 			log.Info("unexpected packet")
@@ -134,7 +139,6 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 
 		applicationLayer := packet.ApplicationLayer()
 		if applicationLayer == nil {
-			log.Warning("applicationLayer is nil")
 			continue
 		}
 		//TODO:入口请求过滤
@@ -163,7 +167,10 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		//TODO:出口流量统计
-		log.Infof("%v --->  %v", srcIP+"_"+srcPort, dstIP+"_"+dstPort)
+		//log.Infof("%v --->  %v", srcIP+"_"+srcPort, dstIP+"_"+dstPort)
+		if srcIP == deviceIP {
+			return
+		}
 		key := dstIP + "_" + dstPort
 		if v, ok := ipPortTrafficMap.Load(key); ok {
 			if vv, ok := v.(int64); ok {
@@ -185,4 +192,25 @@ func getFilter(port uint16) string {
 
 func SetFileSize(fileName string, fileSize int64) {
 	fileSizeMap.Store(fileName, fileSize)
+}
+
+func getDeviceIP(deviceName string) (string, error) {
+	ips := make(map[string]string)
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		log.Error(err)
+		return "", err
+	}
+
+	for _, i := range interfaces {
+		byName, err := net.InterfaceByName(i.Name)
+		if err != nil {
+			return "", err
+		}
+		addresses, err := byName.Addrs()
+		for _, v := range addresses {
+			ips[byName.Name] = v.String()
+		}
+	}
+	return ips[deviceName], nil
 }
