@@ -92,11 +92,11 @@ func GetDownloading(udId string) int {
 		return 0
 	}
 	var downloading float64
-	if fileSize < int64(10*1024) {
+	if fileSize < int64(10*1024*1024) {
 		downloading = float64(downloadSize) * 0.95 / float64(fileSize) * 100
-	} else if fileSize < int64(20*1024) {
+	} else if fileSize < int64(20*1024*1024) {
 		downloading = float64(downloadSize) * 0.9 / float64(fileSize) * 100
-	} else if fileSize < int64(30*1024) {
+	} else if fileSize < int64(30*1024*1024) {
 		downloading = float64(downloadSize) * 0.85 / float64(fileSize) * 100
 	} else {
 		downloading = float64(downloadSize) * 0.8 / float64(fileSize) * 100
