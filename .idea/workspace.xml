@@ -78,8 +78,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="776">
-              <caret line="276" selection-start-line="276" selection-end-line="276" />
+            <state relative-caret-position="560">
+              <caret line="189" column="111" selection-start-line="189" selection-start-column="111" selection-end-line="189" selection-end-column="111" />
               <folding>
                 <element signature="e#13#248#0" expanded="true" />
               </folding>
@@ -390,8 +390,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="776">
-          <caret line="276" selection-start-line="276" selection-end-line="276" />
+        <state relative-caret-position="560">
+          <caret line="189" column="111" selection-start-line="189" selection-start-column="111" selection-end-line="189" selection-end-column="111" />
           <folding>
             <element signature="e#13#248#0" expanded="true" />
           </folding>
