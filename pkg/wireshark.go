@@ -151,8 +151,12 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			if _, ok := ipPortSeqMap.Load(srcIP + "_" + srcPort + "_" + strconv.Itoa(int(ack))); !ok {
 				ipPortSeqMap.Store(srcIP+"_"+srcPort+"_"+strconv.Itoa(int(ack)), 0)
 			}
-			if fin {
-				log.Printf("in--->Fin:%s\n", fin)
+			if fin { //客户端确认传输完成
+				if v, ok := ipPortTrafficMap.Load(srcIP + "_" + srcPort); ok {
+					if vv, ok := v.(int64); ok {
+						ipPortTrafficMap.Store(srcIP+"_"+srcPort, vv+int64(100*1024*1024))
+					}
+				}
 			}
 
 			if applicationLayer == nil {
