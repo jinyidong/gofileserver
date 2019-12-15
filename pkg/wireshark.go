@@ -161,7 +161,6 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 				}
 				fileAndIPPortMap.Store(fileName, srcIP+"_"+srcPort)
 				ipPortTrafficMap.Store(srcIP+"_"+srcPort, int64(0))
-				fileSizeMap.Store(fileName, getFileSize(u.Path))
 			}
 		}
 
@@ -201,4 +200,8 @@ func getFileSize(path string) int64 {
 	})
 	log.Infof("getFileSize--->%s ：%d", path, result)
 	return result
+}
+
+func SetFileSize(fileName string, fileSize int64) {
+	fileSizeMap.Store(fileName, fileSize)
 }

@@ -18,6 +18,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"runtime"
 )
 
@@ -65,8 +66,24 @@ func main() {
 	}()
 
 	http.HandleFunc(fileServerCfg.FilterRule, func(w http.ResponseWriter, r *http.Request) {
-		log.Infof("Download Url:%v", fileServerCfg.Dir+r.URL.Path[1:])
-		http.ServeFile(w, r, fileServerCfg.Dir+r.URL.Path[1:])
+		filePath := fileServerCfg.Dir + r.URL.Path[1:]
+		log.Infof("Download Url:%v", filePath)
+		var fileStat os.FileInfo
+		var err error
+		if fileStat, err = os.Stat(filePath); nil != err { //未查询到文件
+			http.NotFoundHandler().ServeHTTP(w, r)
+			return
+		}
+		if fileStat.IsDir() {
+			http.NotFoundHandler().ServeHTTP(w, r)
+			return
+		}
+		pkg.SetFileSize(fileStat.Name(), fileStat.Size())
+		//data, err := ioutil.ReadFile(filePath)
+		//if nil != err {
+		//
+		//}
+		http.ServeFile(w, r, filePath)
 	})
 
 	http.HandleFunc("/bindUdidAndFile", func(w http.ResponseWriter, r *http.Request) {
