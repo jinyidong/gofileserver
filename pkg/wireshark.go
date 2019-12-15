@@ -23,7 +23,7 @@ var (
 	fileAndIPPortMap sync.Map
 	ipPortTrafficMap sync.Map
 	fileSizeMap      sync.Map
-	ipPortAckMap     sync.Map
+	ipPortSeqMap     sync.Map
 )
 
 func BindUdIdAndFile(udId, file string) {
@@ -133,14 +133,14 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		tcpLayer := packet.Layer(layers.LayerTypeTCP)
-		var ack uint32
+		var seq uint32
 		if tcpLayer != nil {
 			tcp, _ := tcpLayer.(*layers.TCP)
 			srcPort = tcp.SrcPort.String()
 			dstPort = tcp.DstPort.String()
-			ack = tcp.Ack
+			seq = tcp.Seq
 			//FIN, SYN, RST, PSH, ACK, URG, ECE, CWR, NS
-			log.Infof("ack:%v,seq:%v,syn:%v,fin:%v", tcp.Ack, tcp.Seq, tcp.SYN, tcp.FIN)
+			//log.Infof("ack:%v,seq:%v,syn:%v,fin:%v", tcp.Ack, tcp.Seq, tcp.SYN, tcp.FIN)
 		}
 
 		applicationLayer := packet.ApplicationLayer()
@@ -178,12 +178,12 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			continue
 		}
 		key := dstIP + "_" + dstPort
-		if _, ok := ipPortAckMap.Load(key + "_" + strconv.Itoa(int(ack))); ok {
+		if _, ok := ipPortSeqMap.Load(key + "_" + strconv.Itoa(int(seq))); ok {
 			//log.Infof("ipPortAck(ok):%s", key+"_"+strconv.Itoa(int(ack)))
 			continue
 		} else {
-			ipPortAckMap.Store(key+"_"+strconv.Itoa(int(ack)), 1)
-			log.Infof("ipPortAck:%s", key+"_"+strconv.Itoa(int(ack)))
+			ipPortSeqMap.Store(key+"_"+strconv.Itoa(int(seq)), 1)
+			log.Infof("ipPortAck:%s", key+"_"+strconv.Itoa(int(seq)))
 		}
 
 		if v, ok := ipPortTrafficMap.Load(key); ok {
