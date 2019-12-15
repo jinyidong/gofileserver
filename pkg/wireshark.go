@@ -16,14 +16,15 @@ import (
 )
 
 var (
-	snapshotLen      = int32(65536)
-	promiscuous      = true
-	timeout          = pcap.BlockForever
-	udIdAndFileMap   sync.Map
-	fileAndIPPortMap sync.Map
-	ipPortTrafficMap sync.Map
-	fileSizeMap      sync.Map
-	ipPortSeqMap     sync.Map
+	snapshotLen            = int32(65536)
+	promiscuous            = true
+	timeout                = pcap.BlockForever
+	udIdAndFileMap         sync.Map
+	fileAndIPPortMap       sync.Map
+	ipPortTotalTrafficMap  sync.Map
+	fileSizeMap            sync.Map
+	ipPortSeqMap           sync.Map
+	ipPortAckSeqTrafficMap sync.Map
 )
 
 func BindUdIdAndFile(udId, file string) {
@@ -75,7 +76,7 @@ func GetDownloading(udId string) int {
 	}
 
 	//step3:根据ip:port获取流量
-	iTraffic, ok := ipPortTrafficMap.Load(ipPort)
+	iTraffic, ok := ipPortTotalTrafficMap.Load(ipPort)
 	if !ok {
 		log.Warningf("未获取到UdId(%s)->文件(%s)->IP:Port(%s)对应的下载流量", udId, fileName, ipPort)
 		return 0
@@ -133,7 +134,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		tcpLayer := packet.Layer(layers.LayerTypeTCP)
-		var seq, ack uint32 //fin
+		var seq, ack uint32
 		if tcpLayer != nil {
 			tcp, _ := tcpLayer.(*layers.TCP)
 			srcPort = tcp.SrcPort.String()
@@ -141,16 +142,27 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			seq = tcp.Seq
 			ack = tcp.Ack
 		}
-		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) && dstIP != deviceIP {
-			log.Infof("in--->req:%v,ack:%v", seq, ack)
-		}
+
+		//TODO:入口流量监控，数据包确认
 		applicationLayer := packet.ApplicationLayer()
-		if applicationLayer == nil {
-			continue
-		}
-		//TODO:入口请求过滤
 		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) && dstIP != deviceIP {
-			//tcp ack
+			if iPacketTraffic, ok := ipPortAckSeqTrafficMap.Load(fmt.Sprintf("%v_%v_%v_%v", srcIP, srcPort, ack, seq)); ok {
+				var packetTraffic, totalTraffic int64
+				if packetTraffic, ok = iPacketTraffic.(int64); !ok {
+					continue
+				}
+				if iTempTotalTraffic, ok := ipPortTotalTrafficMap.Load(srcIP + "_" + srcPort); ok {
+					if tempTotalTraffic, ok := iTempTotalTraffic.(int64); ok {
+						totalTraffic = tempTotalTraffic
+					}
+				}
+				ipPortTotalTrafficMap.Store(srcIP+"_"+srcPort, totalTraffic+packetTraffic)
+			}
+
+			if applicationLayer == nil {
+				continue
+			}
+			//下载请求初始化
 			inputPayloadStr := string(applicationLayer.Payload())
 			log.Infof("request:%s", inputPayloadStr)
 			if match, _ := regexp.MatchString(filterRule, inputPayloadStr); match {
@@ -170,7 +182,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 					continue
 				}
 				fileAndIPPortMap.Store(fileName, srcIP+"_"+srcPort)
-				ipPortTrafficMap.Store(srcIP+"_"+srcPort, int64(0))
+				ipPortTotalTrafficMap.Store(srcIP+"_"+srcPort, int64(0))
 			}
 		}
 
@@ -178,24 +190,10 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		if srcIP == deviceIP {
 			continue
 		}
-		log.Infof("out--->seq:%v,ack:%v", seq, ack)
-		key := dstIP + "_" + dstPort
-		if _, ok := ipPortSeqMap.Load(key + "_" + strconv.Itoa(int(seq))); ok {
+		if _, ok := ipPortAckSeqTrafficMap.Load(fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack)); ok {
 			continue
-		} else {
-			ipPortSeqMap.Store(key+"_"+strconv.Itoa(int(seq)), 1)
-			//log.Infof("ipPortAck:%s", key+"_"+strconv.Itoa(int(seq)))
 		}
-
-		if v, ok := ipPortTrafficMap.Load(key); ok {
-			if vv, ok := v.(int64); ok {
-				ipPortTrafficMap.Store(key, vv+int64(len(applicationLayer.Payload())))
-				//log.Infof("iPPortFileMap(key:%v,value:%v)", key, vv+int64(len(applicationLayer.Payload())))
-			}
-		} else {
-			ipPortTrafficMap.Store(key, int64(len(applicationLayer.Payload())))
-			//log.Infof("iPPortFileMap(key:%v,value:%v)", key, len(applicationLayer.Payload()))
-		}
+		ipPortAckSeqTrafficMap.Store(fmt.Sprintf("%v_%v_%v_%v", dstIP, dstPort, seq, ack), int64(len(applicationLayer.Payload())))
 	}
 }
 
