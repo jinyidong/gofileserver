@@ -173,9 +173,6 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			continue
 		}
 		key := dstIP + "_" + dstPort
-		fmt.Printf("Payload:%s\n", applicationLayer.Payload())
-		fmt.Printf("LayerPayload:%s\n", applicationLayer.LayerPayload())
-		fmt.Printf("LayerContents:%s\n", applicationLayer.LayerContents())
 		if v, ok := ipPortTrafficMap.Load(key); ok {
 			if vv, ok := v.(int64); ok {
 				ipPortTrafficMap.Store(key, vv+int64(len(applicationLayer.Payload())))
