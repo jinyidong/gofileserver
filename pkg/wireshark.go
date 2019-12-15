@@ -139,6 +139,8 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			srcPort = tcp.SrcPort.String()
 			dstPort = tcp.DstPort.String()
 			ack = tcp.Ack
+			//FIN, SYN, RST, PSH, ACK, URG, ECE, CWR, NS
+			log.Infof("ack:%v,syn:%v,fin:%v", tcp.Ack, tcp.SYN, tcp.FIN)
 		}
 
 		applicationLayer := packet.ApplicationLayer()
@@ -177,7 +179,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 		key := dstIP + "_" + dstPort
 		if _, ok := ipPortAckMap.Load(key + "_" + strconv.Itoa(int(ack))); ok {
-			log.Infof("ipPortAck(ok):%s", key+"_"+strconv.Itoa(int(ack)))
+			//log.Infof("ipPortAck(ok):%s", key+"_"+strconv.Itoa(int(ack)))
 			continue
 		} else {
 			ipPortAckMap.Store(key+"_"+strconv.Itoa(int(ack)), 1)
