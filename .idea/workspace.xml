@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2fe54777-83a9-4744-a0ba-94e2cca79b52" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/pkg/wireshark.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/wireshark.go" afterDir="false" />
-    </list>
+    <list default="true" id="2fe54777-83a9-4744-a0ba-94e2cca79b52" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,8 +76,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
-              <caret line="156" column="77" selection-start-line="156" selection-start-column="77" selection-end-line="156" selection-end-column="77" />
+            <state relative-caret-position="198">
+              <caret line="156" column="90" lean-forward="true" selection-start-line="156" selection-start-column="90" selection-end-line="156" selection-end-column="90" />
               <folding>
                 <element signature="e#13#248#0" expanded="true" />
               </folding>
@@ -259,7 +257,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.66926503" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.28285077" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.28285077" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="bottom" id="LuaCheck" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -390,8 +388,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pkg/wireshark.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="156" column="77" selection-start-line="156" selection-start-column="77" selection-end-line="156" selection-end-column="77" />
+        <state relative-caret-position="198">
+          <caret line="156" column="90" lean-forward="true" selection-start-line="156" selection-start-column="90" selection-end-line="156" selection-end-column="90" />
           <folding>
             <element signature="e#13#248#0" expanded="true" />
           </folding>
