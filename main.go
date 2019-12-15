@@ -18,7 +18,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"time"
 )
 
 type fileServerConfig struct {
@@ -155,11 +154,5 @@ func main() {
 		http.ServeFile(w, r, filePath)
 	})
 
-	s := &http.Server{
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		Addr:         fmt.Sprintf(":%d", fileServerCfg.FileServerPort),
-	}
-
-	s.ListenAndServe()
+	http.ListenAndServe(fmt.Sprintf(":%d", fileServerCfg.FileServerPort), nil)
 }
