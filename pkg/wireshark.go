@@ -147,9 +147,8 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 			continue
 		}
 		//TODO:入口请求过滤
-		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) {
+		if !strings.Contains(srcPort, strconv.Itoa(int(watchPort))) && dstIP != deviceIP {
 			//tcp ack
-			log.Infof("in--->seq:%v,ack:%v", seq, ack)
 			inputPayloadStr := string(applicationLayer.Payload())
 			log.Infof("request:%s", inputPayloadStr)
 			if match, _ := regexp.MatchString(filterRule, inputPayloadStr); match {
@@ -174,7 +173,6 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		}
 
 		//TODO:出口流量统计，如何去噪
-		//log.Infof("%v --->  %v", srcIP+"_"+srcPort, dstIP+"_"+dstPort)
 		if srcIP == deviceIP {
 			continue
 		}
