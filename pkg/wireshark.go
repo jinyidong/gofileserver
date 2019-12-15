@@ -169,7 +169,7 @@ func WireShark(watchPort uint16, deviceName string, filterRule string) {
 		//TODO:出口流量统计
 		//log.Infof("%v --->  %v", srcIP+"_"+srcPort, dstIP+"_"+dstPort)
 		if srcIP == deviceIP {
-			return
+			continue
 		}
 		key := dstIP + "_" + dstPort
 		if v, ok := ipPortTrafficMap.Load(key); ok {
